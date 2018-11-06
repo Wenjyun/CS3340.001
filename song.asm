@@ -31,12 +31,13 @@ jal note50
 jal pause
 
 jal note70
-jal note70
+jal note65
+jal n70
+jal n70
 jal note60
-jal note60
-jal note70
-jal note70
+jal note65
 jal note55
+jal note70
 jal pause
 
 jal n70
@@ -47,7 +48,21 @@ jal n80
 jal n80
 jal note50
 jal pause
+
+jal n50
+jal n55
+
 jal pause
+jal n55
+jal n60
+
+jal pause
+jal n60
+jal n65
+
+jal pause
+
+jal n65
 
 j song #used to loop for now, makes program never ending, will remove
 
