@@ -16,11 +16,13 @@ bulls: .asciiz "Num Bulls: "
 guessword: .space 20
 winner: .asciiz "Congragulations you won!\n"
 loser: .asciiz "You lose!\n"
-music: .asciiz "Background music that we wanted to impliment"
+music: .asciiz "\nBackground music that we wanted to impliment:"
 numbull: .word 0
 numcow: .word 0
-
 winword: .word 0
+
+vic1: .asciiz "You won in "
+vic2: .asciiz " move(s)!\n"
 .text
 # $t0 holds the rng word, $t1 holds the input word
 # $t7 is being used to hold the total count of the program 
@@ -29,6 +31,7 @@ main:
 	li $v0, 42 
 	li $a1, 100 #word will load into $a0
 	syscall
+
 	
 	# Multiply that number by 5 to get the offset from the start of the array
 	mulu $t0, $a0, 5
@@ -42,18 +45,26 @@ main:
 	li $v0, 4
 	la $a0, newln
 	syscall
+	
+	jal s1
 	#display game messages
 	li $v0, 4
 	la $a0, mesg1
 	syscall
 	
+	jal s2 #playing music
+	
 	li $v0, 4
 	la $a0, mesg2
 	syscall
-	
+
+	jal s3
+
 	li $v0, 4
 	la $a0, mesg3
 	syscall
+	
+	jal s4
 	
 	add $t7, $zero, $zero #set value of counter to 0
 	
@@ -210,8 +221,19 @@ win:
 	la $a0, winner
 	syscall
 	
-	
 	jal victory
+	
+	li $v0, 4
+	la $a0, vic1
+	syscall
+	
+	li $v0, 1
+	la $a0, ($t7)
+	syscall
+	
+	li $v0, 4
+	la $a0, vic2
+	syscall
 	
 	j musical 
 	
@@ -297,6 +319,89 @@ addi $sp,$sp,12  # restore stack pointer
 
 jr $ra
 
+s1:
+
+addi    $sp,$sp,-12             # make room on stack
+sw      $ra,8($sp)              # save ra
+
+jal note70
+jal note65
+jal n70
+jal n70
+jal note60
+jal n65
+jal n65
+jal note55
+jal note70
+jal pause
+lw $ra,8($sp) # restore $ra
+addi $sp,$sp,12  # restore stack pointer
+jr $ra
+
+s2:
+addi    $sp,$sp,-12             # make room on stack
+sw      $ra,8($sp)              # save ra
+jal note70
+jal note65
+jal n70
+jal n70
+jal note60
+jal note65
+jal note55
+jal note50
+
+jal pause
+
+lw $ra,8($sp) # restore $ra
+addi $sp,$sp,12  # restore stack pointer
+jr $ra
+
+s3:
+addi    $sp,$sp,-12             # make room on stack
+sw      $ra,8($sp)              # save ra
+jal note70
+jal note65
+jal n70
+jal n70
+jal note60
+jal note65
+jal note55
+jal note70
+jal pause
+
+lw $ra,8($sp) # restore $ra
+addi $sp,$sp,12  # restore stack pointer
+jr $ra
+
+s4:
+addi    $sp,$sp,-12             # make room on stack
+sw      $ra,8($sp)              # save ra
+jal n70
+jal n65
+jal n70
+jal n75
+jal n80
+jal n80
+jal note50
+jal pause
+jal n50
+jal n55
+jal pause
+jal n55
+jal n60
+jal pause
+jal n60
+jal n65
+jal pause
+jal n65
+jal n65
+jal n65
+jal pause
+
+lw $ra,8($sp) # restore $ra
+addi $sp,$sp,12  # restore stack pointer
+jr $ra
+
 song:
 
 addi    $sp,$sp,-12             # make room on stack
@@ -313,7 +418,6 @@ jal note55
 jal note70
 
 jal pause
-
 jal note70
 jal note65
 jal n70
