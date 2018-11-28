@@ -13,12 +13,16 @@ mesg4: .asciiz "Please enter your guess(or 0 to exit): "
 inval: .asciiz "Invalid input.\n"
 cows: .asciiz "Num Cows: "
 bulls: .asciiz "Num Bulls: "
-buffer: .space 20
+guessword: .space 20
 winner: .asciiz "Congragulations you won!\n"
 loser: .asciiz "You lose!\n"
 music: .asciiz "Background music that we wanted to impliment"
+numbull: .word 0
+numcow: .word 0
+
+winword: .word 0
 .text
-# $t0 holds the random genrated word, $t1 holds the input word
+# $t0 holds the rng word, $t1 holds the input word
 # $t7 is being used to hold the total count of the program 
 main:
 	# Get a random number between 0 and 3
@@ -32,6 +36,7 @@ main:
 	# Print a random word from the array using the random offset
 	li $v0, 4
 	la $a0, words($t0)
+	sw $t0, winword
 	syscall
 	
 	li $v0, 4
@@ -59,7 +64,7 @@ game:
 	syscall
 	
 	li $v0, 8 #take in input
-	la $a0, buffer
+	la $a0, guessword
 	li $a1, 20
 	move $t1, $a0
 	syscall
@@ -70,15 +75,33 @@ game:
 	beqz $t2, cont
 	
 cont:	##get and display display number of cows and bulls
-	#jal compfunc1
-	#jal compfunc2
+	lw $t0, winword
+	la $a0, words($t0)
+	la $a1, guessword
+	jal findBulls
+	jal findCowsMain
+	move $t0, $a0
+	move $t1, $a1
 	add $t7, $t7, 1
-	#beq bull, 4, win #if there are 4 bulls, then the person got all 4 letters correct
 	
-	#sub cow, cow, bull #cows-= buills
+	
+	#if you win will play victory music and exit
+	lw $t0, numbull
+	beq $t0, 4, win
+	
+	lw $t1, numcow
+	
+	#subtracts number of bulls from number of cows to get correct number of cows
+	sub $t1, $t1, $t0
+	sw $t1, numcow
 	
 	li $v0, 4
 	la $a0, cows
+	syscall
+	
+	li $v0, 1
+	lw $t0, numcow
+	move $a0, $t0
 	syscall
 	
 	li $v0, 4
@@ -89,24 +112,105 @@ cont:	##get and display display number of cows and bulls
 	la $a0, bulls
 	syscall
 	
+	li $v0, 1
+	lw $t0, numbull
+	move $a0, $t0
+	syscall
+	
 	li $v0, 4
 	la $a0, newln
 	syscall
 	
-	la $a0, buffer
-	move $a0, $t1 #display the input word
+	la $a0, guessword
 	li $v0, 4
 	syscall
-	
 
+	
+	li $v0, 4
+	la $a0, newln
+	syscall
 	beq $t7, 10, defeat
 
 	j game
+
+
+
+findCowsMain:
+	add $t0, $zero, $zero
+	add $t1, $zero, $zero
+	add $t2, $zero, $zero
+	add $t3, $zero, $zero
+	add $t4, $zero, $zero
+	j findCowsLoop
+
+# Increment i in the outer for loop
+findCowsIncrementI:
+	add $t0, $t0, 1
+
+# Outer for loop
+findCowsLoop:
+	bgt $t0, 3, findCowsEnd
+	add $t1, $zero, $zero
+
+# Inner for loop
+findCowsLoop2:
+	bgt $t1, 3, findCowsIncrementI
+	
+	# Get the address of the characters to compare
+	add $t2, $a0, $t0
+	add $t3, $a1, $t1
+	
+	# Put the charactesr in registers
+	lb $t2, ($t2)
+	lb $t3, ($t3)
+	
+	# Branch to the increment lable if they are equal
+	beq $t2, $t3, findCowsIncrement
+	add $t1, $t1, 1
+	j findCowsLoop2
+
+# Increment cows counter
+findCowsIncrement:
+	addi $t4, $t4, 1
+	addi $t1, $t1, 1
+	j findCowsLoop2
+
+# Return number of cows
+findCowsEnd:
+	sw $t4, numcow
+	jr $ra
+	
+	
+findBulls:
+	addi $t0, $zero, 0	# i = 0
+	addi $t5, $zero, 0	# num bulls = 0
+	j forLoop
+increment_i:
+	addi $t0, $t0, 1	# i++
+forLoop:
+	bgt $t0, 3, endLoop	# if i > 3
+	add $t3, $a0, $t0
+	
+	add $t4, $a1, $t0
+	lb $t3, ($t3)
+	lb $t4, ($t4)
+	beq $t3, $t4, addBulls	# compare characters
+	j increment_i
+addBulls:
+	addi $t5, $t5, 1	#increment num bulls
+	j increment_i
+endLoop:
+	move $v0, $t5		# return num bulls
+	sw $t5, numbull
+	jr $ra
+
 
 win:
 	li $v0, 4
 	la $a0, winner
 	syscall
+	
+	
 	jal victory
 	
 	j musical 
@@ -129,11 +233,13 @@ musical:
 	jal song
 	j exit
 validcheck:
-jal valid
-jal pause3
-jal invalid
+	jal valid
+	jal pause3
+	jal invalid
 
-jr $ra
+	jr $ra
+
+
 victory:
 addi    $sp,$sp,-12             # make room on stack
 sw      $ra,8($sp)              # save ra
