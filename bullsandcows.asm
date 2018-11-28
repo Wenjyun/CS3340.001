@@ -65,3 +65,25 @@ findCowsIncrement:
 # Return number of cows
 findCowsEnd:
 	add $v0, $zero, $t4
+	
+	
+findBulls:
+	addi $t0, $zero, 0	# i = 0
+	addi $t5, $zero, 0	# num bulls = 0
+	j forLoop
+increment_i:
+	addi $t0, $t0, 1	# i++
+forLoop:
+	bgt $t0, 3, endLoop	# if i > 3
+	add $t3, $a0, $t0
+	add $t4, $a1, $t0
+	lb $t3, ($t3)
+	lb $t4, ($t4)
+	beq $t3, $t4, addBulls	# compare characters
+	j increment_i
+addBulls:
+	addi $t5, $t5, 1	#increment num bulls
+	j increment_i
+endLoop:
+	move $v0, $t5		# return num bulls
+	jr $ra
