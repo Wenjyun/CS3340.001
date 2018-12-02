@@ -2,8 +2,8 @@
 .data
 words:		.asciiz	"alum","apex","axed","blip","bins","bine","bosh","bowl","dewy","diel","dims","dime","duce","dump","cure","foxy","evil","frat","fowl","gale","gaes",
 "gamy","geds","hams","hail","hays","helm","idol","iron","jabs","jade","jean","jerk","join","kale","keys","knot","lace","lack","lark","lock","lube","mach","mash","meat","mile","mold","nods","norm","nose","oath","oily","oink",
-"orca","owls","pelt","peas","pets","plan","ping","pong","rail","rain","read","rune","rush","scar","sank","sans","shot","ship","tick","tofu","toed","turf","ugly","unit","undo","verb","veil","vent","vain","wane","want","whoa",
-"wife","worm","wrap","yelp","yolk","yogi","your","yoga","zero","zest","zinc","zing","zoos","zoom","worn"
+"orca","owls","pelt","peas","pets","plan","ping","pong","rail","rain","read","rune","rush","scar","sank","sand","shot","ship","tick","tofu","toed","turf","ugly","unit","undo","verb","veil","vent","vain","wane","want","whoa",
+"wife","worm","wrap","yelp","yolk","yogi","your","yoga","zero","zest","zinc","zing","zaps","zeal","worn"
 guessWord:	.asciiz ""
 newln: .asciiz "\n"
 mesg1: .asciiz "Welcome to Bulls and Cows!\n"
@@ -79,6 +79,31 @@ game:
 	li $a1, 20
 	move $t1, $a0
 	syscall
+	
+checkinput:
+	lbu $t1, ($t1)		# get first byte
+	beq $t1, 0x30, exit	# exit if user enter 0
+	addi $t0, $zero, 0	# i = 0
+	addi $t1, $zero, 3	# j = 3	
+	j outerloop
+incrementI:
+	addi $t0, $t0, 1	#i++
+outerloop:
+	bgt $t0, 3, cont	# guess is valid continue to game
+	addi $t1, $t1, 3	# reset j to 3
+innerloop:
+	beq $t0, $t1, incrementI	# if i == j, continue
+	beq $t1, -1, incrementI
+	add $t2, $a0, $t0	# get first byte of guess
+	add $t3, $a0, $t1	# get last byte of guess
+	lbu $t2, ($t2)
+	lbu $t3, ($t3)
+	blt $t2, 97, game	# invalid if not a lowercase alphabetic character
+	bgt $t2, 122, game
+	beq $t2, $t3, game	# compare characters , if equal then its invalid
+	subi $t1, $t1, 1
+	j innerloop
+
 
 	#temporary, setting $t2 to 0 so program will run 
 	add $t2, $zero, $zero
