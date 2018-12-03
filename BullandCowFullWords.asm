@@ -69,6 +69,8 @@ main:
 	
 	add $t7, $zero, $zero #set value of counter to 0
 	
+	j game
+	
 invalidguess1:
 	jal invalid	# play invalid sound
 	li $v0, 4
