@@ -21,6 +21,7 @@ music: .asciiz "\nBackground music that we wanted to impliment:"
 numbull: .word 0
 numcow: .word 0
 winword: .word 0
+loser2: .asciiz "The word was: "
 
 vic1: .asciiz "You won in "
 vic2: .asciiz " move(s)!\n"
@@ -98,7 +99,7 @@ game:
 	
 checkinput:
 	lbu $t1, ($t1)		# get first byte
-	beq $t1, 0x30, exit	# exit if user enter 0
+	beq $t1, 0x30, defeat	# exit if user enter 0
 	addi $t0, $zero, 0	# i = 0
 	addi $t1, $zero, 3	# j = 3	
 	j outerloop
@@ -173,6 +174,7 @@ cont:	##get and display display number of cows and bulls
 	la $a0, newln
 	syscall
 	
+
 	li $v0, 4
 	la $a0, newln
 	syscall
@@ -277,6 +279,17 @@ defeat:
 	li $v0, 4
 	la $a0, loser
 	syscall
+	
+	li $v0, 4
+	la $a0, loser2
+	syscall
+	
+	lw $t0, winword
+	la $a0, words($t0)
+	li $v0, 4
+	syscall
+
+	
 	jal lose
 	j musical
 
@@ -954,4 +967,5 @@ jal pause3
 lw $ra,8($sp) # restore $ra
 addi $sp,$sp,12  # restore stack pointer
 jr $ra
+
 exit:
