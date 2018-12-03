@@ -39,10 +39,10 @@ main:
 	mulu $t0, $a0, 5
 	
 	# Print a random word from the array using the random offset
-	li $v0, 4
-	la $a0, words($t0)
+	#li $v0, 4
+	#la $a0, words($t0)
 	sw $t0, winword
-	syscall
+	#syscall
 	
 	li $v0, 4
 	la $a0, newln
