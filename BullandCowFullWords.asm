@@ -115,6 +115,9 @@ innerloop:
 	add $t3, $a0, $t1	# get last byte of guess
 	lbu $t2, ($t2)
 	lbu $t3, ($t3)
+	addi $t4, $a0, 4	
+	lbu $t4, ($t4)
+	bne $t4, 10, invalidguess1	# invalid if more than 4 letters
 	blt $t2, 97, invalidguess1	# invalid if not a lowercase alphabetic character
 	bgt $t2, 122, invalidguess1
 	beq $t2, $t3, invalidguess2	# compare characters , if equal then its invalid
