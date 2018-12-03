@@ -10,7 +10,8 @@ mesg1: .asciiz "Welcome to Bulls and Cows!\n"
 mesg2: .asciiz "In this game you will try to guess a four letter word in 10 guesses.\n"
 mesg3: .asciiz "The word will not have two of the same letter, and will only contain alphabetic symbols.\n"
 mesg4: .asciiz "Please enter your guess(or 0 to exit): "
-inval: .asciiz "Invalid input.\n"
+inval1: .asciiz "Invalid input.\nYour guess has to be a 4-letter word of all lowercase alphabetic symbols\n"
+inval2: .asciiz "Invalid input.\nYour guess cannot contain two of the same letters\n""
 cows: .asciiz "Num Cows: "
 bulls: .asciiz "Num Bulls: "
 guessword: .space 20
@@ -68,6 +69,19 @@ main:
 	
 	add $t7, $zero, $zero #set value of counter to 0
 	
+invalidguess1:
+	jal invalid	# play invalid sound
+	li $v0, 4
+	la $a0, inval1
+	syscall	
+	j game
+invalidguess2:
+	jal invalid	# play invalid sound
+	li $v0, 4
+	la $a0, inval2
+	syscall	
+	j game
+	
 game:
 	#display message asking for input
 	li $v0, 4
@@ -98,9 +112,9 @@ innerloop:
 	add $t3, $a0, $t1	# get last byte of guess
 	lbu $t2, ($t2)
 	lbu $t3, ($t3)
-	blt $t2, 97, game	# invalid if not a lowercase alphabetic character
-	bgt $t2, 122, game
-	beq $t2, $t3, game	# compare characters , if equal then its invalid
+	blt $t2, 97, invalidguess1	# invalid if not a lowercase alphabetic character
+	bgt $t2, 122, invalidguess1
+	beq $t2, $t3, invalidguess2	# compare characters , if equal then its invalid
 	subi $t1, $t1, 1
 	j innerloop
 
