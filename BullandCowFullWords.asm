@@ -127,6 +127,7 @@ innerloop:
 	beqz $t2, cont
 	
 cont:	##get and display display number of cows and bulls
+	
 	lw $t0, winword
 	la $a0, words($t0)
 	la $a1, guessword
@@ -140,7 +141,6 @@ cont:	##get and display display number of cows and bulls
 	#if you win will play victory music and exit
 	lw $t0, numbull
 	beq $t0, 4, win
-	
 	lw $t1, numcow
 	
 	#subtracts number of bulls from number of cows to get correct number of cows
@@ -173,16 +173,11 @@ cont:	##get and display display number of cows and bulls
 	la $a0, newln
 	syscall
 	
-	la $a0, guessword
-	li $v0, 4
-	syscall
-
-	
 	li $v0, 4
 	la $a0, newln
 	syscall
 	beq $t7, 10, defeat
-
+	jal valid
 	j game
 
 
