@@ -1,4 +1,10 @@
-
+	#	Team Name: Pro Coders
+	#
+	#	Team Members: Edgardo Ramirez, Adam Johnson, Luis Castro Ochoa
+	#
+	#	CS 3340.001
+	#
+	#
 .data
 words:		.asciiz	"alum","apex","axed","blip","bins","bine","bosh","bowl","dewy","diel","dims","dime","duce","dump","cure","foxy","evil","frat","fowl","gale","gaes",
 "gamy","geds","hams","hail","hays","helm","idol","iron","jabs","jade","jean","jerk","join","kale","keys","knot","lace","lack","lark","lock","lube","mach","mash","meat","mile","mold","nods","norm","nose","oath","oily","oink",
@@ -75,13 +81,13 @@ main:
 invalidguess1:
 	jal invalid	# play invalid sound
 	li $v0, 4
-	la $a0, inval1
+	la $a0, inval1	#print error message
 	syscall	
 	j game
 invalidguess2:
 	jal invalid	# play invalid sound
 	li $v0, 4
-	la $a0, inval2
+	la $a0, inval2	#print error message
 	syscall	
 	j game
 	
@@ -186,7 +192,7 @@ cont:	##get and display display number of cows and bulls
 	j game
 
 
-
+# Find num Cows subroutine
 findCowsMain:
 	add $t0, $zero, $zero
 	add $t1, $zero, $zero
@@ -232,7 +238,7 @@ findCowsEnd:
 	sw $t4, numcow
 	jr $ra
 	
-	
+# Find num Bulls subroutine	
 findBulls:
 	addi $t0, $zero, 0	# i = 0
 	addi $t5, $zero, 0	# num bulls = 0
@@ -256,7 +262,7 @@ endLoop:
 	sw $t5, numbull
 	jr $ra
 
-
+# If the player wins, display the number of moves needed and play winning sound
 win:
 	li $v0, 4
 	la $a0, winner
@@ -277,7 +283,8 @@ win:
 	syscall
 	
 	j musical 
-	
+
+# if the player loses, display the secret word and play loser sound
 defeat:
 	li $v0, 4
 	la $a0, loser
@@ -295,7 +302,7 @@ defeat:
 	
 	jal lose
 	j musical
-
+# Background music
 musical:
 	jal pause2
 	jal pause2
@@ -313,7 +320,7 @@ validcheck:
 
 	jr $ra
 
-
+# sound played if player wins
 victory:
 addi    $sp,$sp,-12             # make room on stack
 sw      $ra,8($sp)              # save ra
@@ -328,7 +335,7 @@ lw $ra,8($sp) # restore $ra
 addi $sp,$sp,12  # restore stack pointer
 jr $ra
 
-
+# sound played if player inputs invalid guess
 invalid:
 addi    $sp,$sp,-12             # make room on stack
 sw      $ra,8($sp)              # save ra
@@ -355,7 +362,7 @@ lw $ra,8($sp) # restore $ra
 addi $sp,$sp,12  # restore stack pointer
 
 jr $ra
-
+# Sound played if player loses
 lose:
 addi    $sp,$sp,-12             # make room on stack
 sw      $ra,8($sp)              # save ra
@@ -371,6 +378,7 @@ addi $sp,$sp,12  # restore stack pointer
 
 jr $ra
 
+# Sounds played throughout the game
 s1:
 
 addi    $sp,$sp,-12             # make room on stack
