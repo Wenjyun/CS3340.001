@@ -95,6 +95,4 @@ zero
 zest
 zinc
 zing
-zoos
-zoom
 worn
